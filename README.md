@@ -50,21 +50,9 @@ $result => Array (
       )
 )
 
-##Getting an HTML output:
-```php
-$eMysqli->getHTML( [CALL_OUTPUT_ARRAY*], [TABLE_ATTRIBUTES], 'TABLE_NAME' );
-```
- > **Example:**
-```php
-$htmlCode = $eMysqli->getHTML($result);
-$htmlCode = $eMysqli->getHTML($result, ['style' => 'background-color: orange;']);
-$htmlCode = $eMysqli->getHTML($result, [], 'Users');
-```
-
 ##Version history
 
 ###v1.0.1
-* HTML output support
 * Fix some bugs
 
 ###v1.0.0
