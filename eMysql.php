@@ -20,7 +20,7 @@
     //
     //      - Calling a procedure:
     //
-    //          · $eMysqli->callProcedure('PROCEDURE_NAME', [INPUT], [OUTPUT]);
+    //          · $eMysqli->callProcedure( 'PROCEDURE_NAME'*, [INPUT], [OUTPUT] );
     //
     //          · Example:
     //
@@ -32,7 +32,7 @@
     // 
     //      - Calling a function:
     //
-    //          · $eMysqli->callFunction('FUNCTION_NAME', [INPUT]);
+    //          · $eMysqli->callFunction( 'FUNCTION_NAME'*, [INPUT] );
     //
     //          · Example:
     //
@@ -41,7 +41,7 @@
     // 
     //      - Calling a view:
     //
-    //          · $eMysqli->callView('VIEW_NAME');
+    //          · $eMysqli->callView( 'VIEW_NAME'* );
     //
     //          · Example:
     //
@@ -57,6 +57,16 @@
     //                      )
     //                )
     //
+    //      - Getting an HTML output:
+    //
+    //          · $eMysqli->getHTML( [CALL_OUTPUT_ARRAY]*, [TABLE_ATTRIBUTES], [TABLE_NAME] );
+    //
+    //          · Example:
+    //
+    //              · $htmlCode = $eMysqli->getHTML($result);
+    //              · $htmlCode = $eMysqli->getHTML($result, ['style' => 'background-color: orange;']);
+    //              · $htmlCode = $eMysqli->getHTML($result, [], 'Users');
+    //
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     // Include guard (C++ like)
@@ -67,9 +77,9 @@
         function getMysqlConnection(){
             
             $host = "localhost";
-            $username = "username";
-            $password = "password";
-            $database = "database";
+            $username = "isc30";
+            $password = "";
+            $database = "web";
             
             $eMysqli = new eMysqli($host, $username, $password, $database);
             if ($eMysqli->connect_errno) {
@@ -129,7 +139,7 @@
             
             ///////////////////////////////////////////////////////////////////////////////////////
             // Calls a function and returns the result
-            function callFunction($name, $input){
+            function callFunction($name, $input = []){
                 
                 // Return variable
                 $returnData = [];
@@ -159,7 +169,7 @@
             
             ///////////////////////////////////////////////////////////////////////////////////////
             // Calls a procedure and returns the (result of the procedure + output) as array
-            function callProcedure($name, $input, $output){
+            function callProcedure($name, $input = [], $output = []){
                 
                 // Return variable
                 $returnData = [ 'pr' => [], 'out' => [] ];
@@ -210,6 +220,65 @@
                 
             }
             
+            ///////////////////////////////////////////////////////////////////////////////////////
+            // Gets an output array and returns an html table
+            function getHTML($input, $attributes = [], $caption = ''){
+                
+                // Output variable
+                $htmlString = '';
+                
+                // If isnt an array, return value
+                if(!is_array($input))
+                    return $input;
+                    
+                // If array is empty, return ''
+                if(count($input) == 0)
+                    return '';
+                    
+                // If is a procedure result, concatenate both tables
+                if(isset($input['pr']) && isset($input['out'])){
+                    return $this->getHTML($input['pr'], $attributes, 'Procedure') . $this->getHTML($input['out'], $attributes, 'Output');
+                }
+                
+                $multiLevel = is_array(array_values($input)[0]); // Is a multilevel array?
+                
+                $htmlString .= '<br/><br/><table';
+                foreach($attributes as $key => $value){
+                    $htmlString .= ' ' . $key . '="' . $value . '"';
+                }
+                $htmlString .= '>';
+                if(!empty($caption))
+                    $htmlString .= '<caption>' . $caption . '</caption>';
+                
+                // Print table header
+                $htmlString .= '<tr>';
+                $htmlString .= '<th>' . implode('</th><th>', array_keys($multiLevel?$input[0]:$input)) . '</th>';
+                $htmlString .= '</tr>';
+                
+                if($multiLevel){
+                    
+                    for($i = 0; $i < count($input); $i++){
+                        
+                        $htmlString .= '<tr>';
+                        $htmlString .= '<td>' . implode('</td><td>', array_values($input[$i])) . '</td>';
+                        $htmlString .= '</tr>';
+                        
+                    }
+                    
+                } else {
+                    
+                    $htmlString .= '<tr>';
+                    $htmlString .= '<td>' . implode('</td><td>', array_values($input)) . '</td>';
+                    $htmlString .= '</tr>';
+                    
+                }
+                
+                $htmlString .= '</table><br/><br/>';
+                
+                return $htmlString;
+                
+            }
+
         }
         
     }
