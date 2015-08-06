@@ -2,7 +2,7 @@
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
-    //  Extended Mysqli (eMysqli)
+    //  Extended Mysqli (eMysqli) v1.0.1
     //  https://github.com/isc30/eMysqli
     //  By: isc30 -> ivansanzcarasa@gmail.com
     //
@@ -20,7 +20,7 @@
     //
     //      - Calling a procedure:
     //
-    //          · $eMysqli->callProcedure( 'PROCEDURE_NAME'*, [INPUT], [OUTPUT] );
+    //          · $eMysqli->callProcedure( 'PROCEDURE_NAME*', [INPUT], [OUTPUT] );
     //
     //          · Example:
     //
@@ -32,7 +32,7 @@
     // 
     //      - Calling a function:
     //
-    //          · $eMysqli->callFunction( 'FUNCTION_NAME'*, [INPUT] );
+    //          · $eMysqli->callFunction( 'FUNCTION_NAME*', [INPUT] );
     //
     //          · Example:
     //
@@ -41,7 +41,7 @@
     // 
     //      - Calling a view:
     //
-    //          · $eMysqli->callView( 'VIEW_NAME'* );
+    //          · $eMysqli->callView( 'VIEW_NAME*' );
     //
     //          · Example:
     //
@@ -59,7 +59,7 @@
     //
     //      - Getting an HTML output:
     //
-    //          · $eMysqli->getHTML( [CALL_OUTPUT_ARRAY]*, [TABLE_ATTRIBUTES], [TABLE_NAME] );
+    //          · $eMysqli->getHTML( [CALL_OUTPUT_ARRAY*], [TABLE_ATTRIBUTES], 'TABLE_NAME' );
     //
     //          · Example:
     //
@@ -242,7 +242,7 @@
                 
                 $multiLevel = is_array(array_values($input)[0]); // Is a multilevel array?
                 
-                $htmlString .= '<br/><br/><table';
+                $htmlString .= '<table';
                 foreach($attributes as $key => $value){
                     $htmlString .= ' ' . $key . '="' . $value . '"';
                 }
@@ -273,7 +273,7 @@
                     
                 }
                 
-                $htmlString .= '</table><br/><br/>';
+                $htmlString .= '</table>';
                 
                 return $htmlString;
                 
