@@ -11,7 +11,7 @@ $eMysqli = getMysqlConnection();
 
 ##Calling a procedure:
 ```php
-$eMysqli->callProcedure('PROCEDURE_NAME', [INPUT], [OUTPUT]);
+$eMysqli->callProcedure( 'PROCEDURE_NAME*', [INPUT], [OUTPUT] );
 ```
  > **Example:**
 ```php
@@ -24,7 +24,7 @@ $result => Array (
 
 ##Calling a function:
 ```php
-$eMysqli->callFunction('FUNCTION_NAME', [INPUT]);
+$eMysqli->callFunction( 'FUNCTION_NAME*', [INPUT] );
 ```
  > **Example:**
 ```php
@@ -34,7 +34,7 @@ $result => 83
 
 ##Calling a view:
 ```php
-eMysqli->callView('VIEW_NAME');
+$eMysqli->callView( 'VIEW_NAME*' );
 ```
  > **Example:**
 ```php
@@ -50,7 +50,23 @@ $result => Array (
       )
 )
 
+##Getting an HTML output:
+```php
+$eMysqli->getHTML( [CALL_OUTPUT_ARRAY*], [TABLE_ATTRIBUTES], 'TABLE_NAME' );
+```
+ > **Example:**
+```php
+$htmlCode = $eMysqli->getHTML($result);
+$htmlCode = $eMysqli->getHTML($result, ['style' => 'background-color: orange;']);
+$htmlCode = $eMysqli->getHTML($result, [], 'Users');
+```
+
 ##Version history
+
+###v1.0.1
+* HTML output support
+* Fix some bugs
+
 ###v1.0.0
 * Procedure support
 * Function support
