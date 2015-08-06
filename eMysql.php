@@ -2,7 +2,7 @@
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
-    //  Extended Mysqli (eMysqli) v1.0.1
+    //  Extended Mysqli (eMysqli)
     //  https://github.com/isc30/eMysqli
     //  By: isc30 -> ivansanzcarasa@gmail.com
     //
@@ -56,16 +56,6 @@
     //                          [username] => 'Juan'
     //                      )
     //                )
-    //
-    //      - Getting an HTML output:
-    //
-    //          · $eMysqli->getHTML( [CALL_OUTPUT_ARRAY*], [TABLE_ATTRIBUTES], 'TABLE_NAME' );
-    //
-    //          · Example:
-    //
-    //              · $htmlCode = $eMysqli->getHTML($result);
-    //              · $htmlCode = $eMysqli->getHTML($result, ['style' => 'background-color: orange;']);
-    //              · $htmlCode = $eMysqli->getHTML($result, [], 'Users');
     //
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -217,65 +207,6 @@
                 }
                 
                 return $returnData;
-                
-            }
-            
-            ///////////////////////////////////////////////////////////////////////////////////////
-            // Gets an output array and returns an html table
-            function getHTML($input, $attributes = [], $caption = ''){
-                
-                // Output variable
-                $htmlString = '';
-                
-                // If isnt an array, return value
-                if(!is_array($input))
-                    return $input;
-                    
-                // If array is empty, return ''
-                if(count($input) == 0)
-                    return '';
-                    
-                // If is a procedure result, concatenate both tables
-                if(isset($input['pr']) && isset($input['out'])){
-                    return $this->getHTML($input['pr'], $attributes, 'Procedure') . $this->getHTML($input['out'], $attributes, 'Output');
-                }
-                
-                $multiLevel = is_array(array_values($input)[0]); // Is a multilevel array?
-                
-                $htmlString .= '<table';
-                foreach($attributes as $key => $value){
-                    $htmlString .= ' ' . $key . '="' . $value . '"';
-                }
-                $htmlString .= '>';
-                if(!empty($caption))
-                    $htmlString .= '<caption>' . $caption . '</caption>';
-                
-                // Print table header
-                $htmlString .= '<tr>';
-                $htmlString .= '<th>' . implode('</th><th>', array_keys($multiLevel?$input[0]:$input)) . '</th>';
-                $htmlString .= '</tr>';
-                
-                if($multiLevel){
-                    
-                    for($i = 0; $i < count($input); $i++){
-                        
-                        $htmlString .= '<tr>';
-                        $htmlString .= '<td>' . implode('</td><td>', array_values($input[$i])) . '</td>';
-                        $htmlString .= '</tr>';
-                        
-                    }
-                    
-                } else {
-                    
-                    $htmlString .= '<tr>';
-                    $htmlString .= '<td>' . implode('</td><td>', array_values($input)) . '</td>';
-                    $htmlString .= '</tr>';
-                    
-                }
-                
-                $htmlString .= '</table>';
-                
-                return $htmlString;
                 
             }
 
