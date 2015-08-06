@@ -2,7 +2,7 @@
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
-    //  Extended Mysqli (eMysqli)
+    //  Extended Mysqli (eMysqli) v1.0.1
     //  https://github.com/isc30/eMysqli
     //  By: isc30 -> ivansanzcarasa@gmail.com
     //
