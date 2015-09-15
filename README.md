@@ -52,6 +52,9 @@ $result => Array (
 
 ##Version history
 
+###v1.1.0
+* Changed procedure call method when it returns 2 or more SELECTs
+
 ###v1.0.1
 * Fix some bugs
 
