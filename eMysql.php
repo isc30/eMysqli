@@ -2,7 +2,7 @@
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
-    //  Extended Mysqli (eMysqli) v1.0.1
+    //  Extended Mysqli (eMysqli) v1.1.0
     //  https://github.com/isc30/eMysqli
     //  By: isc30 -> ivansanzcarasa@gmail.com
     //
@@ -66,10 +66,10 @@
         // Optional function to get connection object :)
         function getMysqlConnection(){
             
-            $host = "localhost";
-            $username = "isc30";
+            $host = "";
+            $username = "";
             $password = "";
-            $database = "web";
+            $database = "";
             
             $eMysqli = new eMysqli($host, $username, $password, $database);
             if ($eMysqli->connect_errno) {
@@ -88,22 +88,9 @@
         
         class eMysqli extends mysqli {
             
-            // RAM memory cleanup
-            function freeMemory($queryRes){
-                
-                $queryRes->free();
-                while($this->more_results()){
-                    $this->next_result();
-                    if($res = $this->store_result()){
-                        $res->free(); 
-                    }
-                }
-                
-            }
-            
             ///////////////////////////////////////////////////////////////////////////////////////
             // Calls a view and returns the result as array
-            function callView($name){
+            function callView($name) {
                 
                 // Return variable
                 $returnData = [];
@@ -111,15 +98,15 @@
                 // ------- CALL VIEW -------
                 
                 $queryString = "SELECT * FROM `$name`";
-                $queryRes = $this->query($queryString) or die($this->error);
+                $queryResult = $this->query($queryString) or die($this->error);
                 
-                if($queryRes->field_count > 0){
+                if($queryResult->field_count > 0){
                     
-                    while($fetchResult = $queryRes->fetch_assoc()){
+                    while($fetchResult = $queryResult->fetch_assoc()) {
                         $returnData[] = $fetchResult;
                     }
                     
-                    $this->freeMemory($queryRes); // Free memory
+                    $queryResult->free(); // Free memory
                     
                 }
                 
@@ -129,27 +116,27 @@
             
             ///////////////////////////////////////////////////////////////////////////////////////
             // Calls a function and returns the result
-            function callFunction($name, $input = []){
+            function callFunction($name, $input = []) {
                 
                 // Return variable
                 $returnData = [];
                 
                 // Escape all params... NO SQLI IS ALLOWED HERE
-                for($i = 0; $i < count($input); $i++){
+                for($i = 0; $i < count($input); $i++) {
                     $input[$i] = '\'' . $this->real_escape_string($input[$i]) . '\'';
                 }
                 
                 // ------- CALL FUNCTION -------
                 
                 $queryString = "SELECT `$name` (" . implode(",", $input) . ') as `output`';
-                $queryRes = $this->query($queryString) or die($this->error);
+                $queryResult = $this->query($queryString) or die($this->error);
                 
-                if($queryRes->field_count > 0){
+                if($queryResult->field_count > 0) {
                     
-                    $fetchResult = $queryRes->fetch_assoc();
+                    $fetchResult = $queryResult->fetch_assoc();
                     $returnData = $fetchResult['output'];
                     
-                    $this->freeMemory($queryRes); // Free memory
+                    $queryResult->free(); // Free memory
                     
                 }
                 
@@ -159,7 +146,7 @@
             
             ///////////////////////////////////////////////////////////////////////////////////////
             // Calls a procedure and returns the (result of the procedure + output) as array
-            function callProcedure($name, $input = [], $output = []){
+            function callProcedure($name, $input = [], $output = []) {
                 
                 // Return variable
                 $returnData = [ 'pr' => [], 'out' => [] ];
@@ -175,32 +162,45 @@
                 // ------- CALL PROCEDURE -------
                 
                 $queryString = "CALL `$name` (" . implode(",", $params) . ')';
-                $queryRes = $this->query($queryString) or die($this->error);
+                $this->multi_query($queryString) or die($this->error);
                 
-                if($queryRes->field_count > 0){
+                // While we get More Results
+                while($this->more_results()) {
                     
-                    while($fetchResult = $queryRes->fetch_assoc()){
-                        $returnData['pr'][] = $fetchResult;
+                    $this->next_result(); // Set pointer in next result
+                    
+                    if ($queryResult = $this->store_result()) {
+                        
+                        // Get data
+                        $queryData = [];
+                        while ($fetchResult = $queryResult->fetch_assoc()) {
+                            $queryData[] = $fetchResult;
+                        }
+                        
+                        // Add data to output Array
+                        $returnData['pr'][] = $queryData;
+                        
+                        // Free memory
+                        $queryResult->free();
+                        
                     }
-                    
-                    $this->freeMemory($queryRes); // Free memory
-                    
+
                 }
                 
                 // ------- GET OUTPUT -------
                 
                 // If there are some output parameters
-                if(count($output) > 0){
+                if(count($output) > 0) {
                     
                     $queryString = 'SELECT ' . implode(",", $output);
-                    $queryRes = $this->query($queryString) or die($this->error);
+                    $queryResult = $this->query($queryString) or die($this->error);
                     
-                    if($queryRes->field_count > 0){
+                    if($queryResult->field_count > 0) {
                         
-                        $fetchResult = $queryRes->fetch_assoc();
+                        $fetchResult = $queryResult->fetch_assoc();
                         $returnData['out'] = $fetchResult;
                         
-                        $this->freeMemory($queryRes); // Free memory
+                        $queryResult->free(); // Free memory
                         
                     }
                     
